@@ -3,6 +3,7 @@ from .models import Task
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.views import View
+from django.contrib.auth.models import User
 
 def to_dict(task):
     data = {
@@ -16,6 +17,16 @@ def to_dict(task):
     }
 
     return data
+
+class Registration(View):
+    def post(self, request: HttpRequest) -> JsonResponse:
+        data = data = json.loads(request.body.decode("utf-8"))
+        User(
+            username = data['username'],
+            password = data['password'],
+        ).save()
+        return JsonResponse({"status" : "User created"})
+
 
 class Tasks(View):
 
