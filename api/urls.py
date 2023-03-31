@@ -3,8 +3,8 @@ from .views import Tasks, Tasks_id, Tasks_create, Complete, Completed, Uncomplet
 
 
 urlpatterns = [
+    path('tasks/<int:id>/', Tasks.as_view()),
     path('tasks/', Tasks.as_view()),
-    path('tasks/<int:id>/', Tasks_id.as_view()),
     path('tasks/create/', Tasks_create.as_view()),
     path('tasks/<int:id>/update/', Tasks.as_view()),
     path('tasks/<int:id>/delete/', Tasks.as_view()),

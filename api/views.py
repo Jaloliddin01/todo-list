@@ -1,26 +1,39 @@
 from django.http import HttpRequest, JsonResponse
 from .models import Task
 import json
+from django.core.exceptions import ObjectDoesNotExist
 from django.views import View
+
+def to_dict(task):
+    data = {
+        'id': task.id,
+        'name': task.name,
+        'completed': task.completed,
+        'desciption': task.description,
+        'created': task.created,
+        'updated': task.updated,
+        'user' : task.user.username, 
+    }
+
+    return data
 
 class Tasks(View):
 
-    def get(self, request: HttpRequest) -> JsonResponse:
+    def get(self, request: HttpRequest, id = None) -> JsonResponse:
         '''get all tasks'''
-        tasks = Task.objects.all()
-        data = {'tasks': []}
+        if id == None:
+            tasks = Task.objects.all()
+            data = {'tasks': []}
 
-        for task in tasks:
-            data['tasks'].append({
-                'id': task.id,
-                'name': task.name,
-                'completed': task.completed,
-                'desciption': task.description,
-                'created': task.created,
-                'updated': task.updated,
-            })
-
-        return JsonResponse(data)
+            for task in tasks:
+                data['tasks'].append(to_dict(task))
+            return JsonResponse(data)
+        else:
+            try:
+                task = Task.objects.get(pk=id)
+                return JsonResponse(to_dict(task))
+            except ObjectDoesNotExist:
+                return JsonResponse({"status": "does not exist"})
 
     def delete(self, request: HttpRequest, id: int) -> JsonResponse:
         task = Task.objects.get(pk=id)
